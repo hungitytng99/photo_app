@@ -5,12 +5,18 @@ import SelectField from "custom-field/SelectField/SelectField";
 import { Formik, Form, FastField } from "formik";
 import { Button, FormGroup } from "reactstrap";
 import * as Yup from 'yup';
+import PropTypes from 'prop-types';
+import Loading from "components/Loading/Loading";
+
+PhotoForm.propTypes = {
+    onSubmit : PropTypes.func
+}
+
+PhotoForm.defaultProps = {
+    onSubmit : null,
+}
 function PhotoForm(props) {
-    const initialValues = {
-        title: "",
-        categoryId: null,
-        photo: ""
-    }
+    const { initialValues , isAddMode} = props;
 
     const validationSchema = Yup.object().shape({
         title: Yup.string().required('This field is required.'),
@@ -29,10 +35,10 @@ function PhotoForm(props) {
         <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={values => console.log('Submit: ' , values)}
+            onSubmit={props.onSubmit}
             >
             {formikProps => {
-                const { values, errors, touch } = formikProps;
+                const { values, errors, touch, isSubmitting } = formikProps;
                 console.log({ values, errors, touch });
                 return (
                     <Form>
@@ -59,9 +65,11 @@ function PhotoForm(props) {
                             label="Photo"
                         />
                         <FormGroup>
-                            <Button type="submit" color="primary">Add to album</Button>
+                            <Button type="submit" color={isAddMode ? "primary" : "success"}>{isAddMode ? "Add to album" : "Update your photo"}</Button>
                         </FormGroup>
+                        {isSubmitting && <Loading/>}
                     </Form>
+                   
                 )
             }
 
